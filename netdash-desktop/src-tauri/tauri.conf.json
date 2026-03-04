@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "NetDash",
+  "version": "0.1.0",
+  "identifier": "netdash.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev:web",
+    "beforeBuildCommand": "npm run build:web",
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "NetDash",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 1100,
+        "minHeight": 700
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi"],
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.png"
+    ]
+  },
+  "plugins": {
+    "updater": {
+      "active": false,
+      "endpoints": [
+        "https://example.com/netdash-desktop/latest.json"
+      ],
+      "pubkey": "CHANGE_ME_TO_UPDATER_PUBKEY"
+    }
+  }
+}

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NetDash Settings</title>
+    <style>
+      :root {
+        --bg: #f5f7ff;
+        --card: #ffffff;
+        --line: #d9dff2;
+        --text: #151a2e;
+        --muted: #5a6480;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at top, #ffffff, var(--bg));
+        color: var(--text);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .card {
+        width: min(450px, 90vw);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.2rem 1.25rem;
+        background: var(--card);
+        box-shadow: 0 24px 40px rgba(23, 34, 67, 0.12);
+      }
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.2rem;
+      }
+      p {
+        margin: 0 0 1rem;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .field {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.55rem 0;
+        gap: 0.75rem;
+      }
+      .actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.5rem;
+      }
+      button {
+        border: 0;
+        border-radius: 8px;
+        background: #2f4bff;
+        color: #fff;
+        padding: 0.5rem 0.9rem;
+        cursor: pointer;
+      }
+      button.secondary {
+        background: #e5e9ff;
+        color: #2a3c8f;
+      }
+      #status {
+        margin-top: 0.8rem;
+        font-size: 0.86rem;
+        min-height: 1.2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="card">
+      <h1>NetDash Settings</h1>
+      <p>Choose which dashboard target the shell loads:</p>
+      <form id="settings-form">
+        <label class="field">
+          <span>Production</span>
+          <input type="radio" name="target-url" value="https://dash.netransit.net" />
+        </label>
+        <label class="field">
+          <span>Staging</span>
+          <input type="radio" name="target-url" value="https://dash-staging.netransit.net" />
+        </label>
+        <div class="actions">
+          <button type="submit">Save and reload main</button>
+          <button type="button" class="secondary" id="close">Close</button>
+        </div>
+      </form>
+      <div id="status" role="status" aria-live="polite"></div>
+    </section>
+    <script type="module" src="/src/settings.ts"></script>
+  </body>
+</html>
