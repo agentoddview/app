@@ -11,7 +11,9 @@
     "build:web": "vite build",
     "icons:generate": "magick convert icons/icon.png -define icon:auto-resize=16,24,32,48,64,128,256 icons/icon.ico",
     "dev:electron": "cd electron-fallback && npm install && npm run dev",
-    "build:electron": "cd electron-fallback && npm install && npm run build"
+    "build:electron:compile": "cd electron-fallback && npm install && npm run build",
+    "build:electron:win": "cd electron-fallback && npm install && npm run dist",
+    "build:electron": "npm run build:electron:win"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0"
