@@ -1,11 +1,11 @@
 [package]
-name = "netdash-desktop"
+name = "net-control-center"
 version = "0.1.0"
-description = "NetDash desktop wrapper app"
+description = "NET Control Center desktop wrapper app"
 edition = "2021"
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 open = "5"

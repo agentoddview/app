@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NetDash Settings</title>
+    <title>NET Control Center Settings</title>
     <style>
       :root {
-        --bg: #f5f7ff;
+        --bg: #f4f7ff;
         --card: #ffffff;
         --line: #d9dff2;
         --text: #151a2e;
@@ -37,6 +37,11 @@
         margin: 0 0 1rem;
         color: var(--muted);
         font-size: 0.92rem;
+      }
+      .help {
+        margin: 0.5rem 0 0.7rem;
+        color: var(--muted);
+        font-size: 0.84rem;
       }
       .field {
         display: flex;
@@ -71,7 +76,7 @@
   </head>
   <body>
     <section class="card">
-      <h1>NetDash Settings</h1>
+      <h1>NET Control Center Settings</h1>
       <p>Choose which dashboard target the shell loads:</p>
       <form id="settings-form">
         <label class="field">
@@ -81,6 +86,11 @@
         <label class="field">
           <span>Staging</span>
           <input type="radio" name="target-url" value="https://dash-staging.netransit.net" />
+        </label>
+        <p class="help">Enable launch on Windows start-up (setting is stored locally).</p>
+        <label class="field">
+          <span>Launch on startup</span>
+          <input type="checkbox" id="launch-on-startup" />
         </label>
         <div class="actions">
           <button type="submit">Save and reload main</button>

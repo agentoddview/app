@@ -1,13 +1,15 @@
 {
-  "name": "netdash-desktop",
+  "name": "net-control-center",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",
+    "build:win": "tauri build --bundles app nsis msi",
     "dev:web": "vite",
     "build:web": "vite build",
+    "icons:generate": "magick convert icons/icon.png -define icon:auto-resize=16,24,32,48,64,128,256 icons/icon.ico",
     "dev:electron": "cd electron-fallback && npm install && npm run dev",
     "build:electron": "cd electron-fallback && npm install && npm run build"
   },

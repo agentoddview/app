@@ -1,54 +1,51 @@
-# NetDash Desktop
+# NET Control Center
 
-NetDash Desktop wraps the existing web dashboard at `https://dash.netransit.net` in a native desktop shell.
-
-This repo intentionally does not re-implement the web UI. It simply hosts the live site inside an embedded browser window.
+NET Control Center is a native desktop wrapper around the live dashboard at `https://dash.netransit.net`.
+It loads the remote website inside a native WebView without re-implementing dashboard UI.
 
 ## Tech stack
 
-- Preferred: [Tauri v2](https://tauri.app/) + [Vite](https://vitejs.dev/) + TypeScript
-- Fallback: Electron + TypeScript (`electron-fallback/`)
+- Preferred: [Tauri v2](https://v2.tauri.app/) + [Vite](https://vite.dev/) + TypeScript
+- Fallback: Electron + TypeScript (`electron-fallback/`) if Tauri tooling is unavailable
+
+## What changed in this version
+
+- Branded as **NET Control Center**
+- Window title: `NET Control Center`
+- Default URL: `https://dash.netransit.net`
+- Configurable staging URL: `https://dash-staging.netransit.net`
+- Window size: `1400x900` default, `1100x700` minimum
+- Window size and position are persisted locally
+- External link allow-list with external links opened in system browser
+- Native settings screen for URL + startup preference
+- Tray-first behavior and quality-of-life menu actions
 
 ## Prerequisites
 
 - Node.js 20+
-- Rust toolchain (for Tauri)
-- Windows x64 for primary output
-- For macOS/Linux: same codebase works, bundle targets in `src-tauri/tauri.conf.json` can be extended
+- Rust toolchain (for Tauri build)
+- Windows x64 for requested installer/portable output
 
-## Repo layout
+## Repository layout
 
-- `src/` - Vite pages used by the desktop shell and native settings window
-- `src-tauri/` - Tauri app crate (Rust), config, and icons
-- `electron-fallback/` - Electron fallback implementation
-- `icons/` - placeholder assets
+- `src/` – shell pages (`index.html`, `settings.html`) and TS front-end
+- `src-tauri/` – Rust app crate, config, and Tauri metadata
+- `icons/` – app icons (`icon.png`, `icon.ico`, optional `icon.icns`)
+- `electron-fallback/` – backup shell when Tauri is not available
 
-## Installation
+## Install
 
 ```bash
 npm install
 ```
 
-## Development
-
-Run the Tauri shell:
+## Run in development
 
 ```bash
 npm run dev
 ```
 
-This starts the Vite dev server (`npm run dev:web`) and opens the Tauri app loading:
-
-- `https://dash.netransit.net` by default
-- allow-listing for NetDash domains only
-- custom File menu and shortcuts:
-  - Reload (`Ctrl+R`)
-  - Back (`Alt+Left`)
-  - Forward (`Alt+Right`)
-  - Clear Cache + Cookies
-  - Settings...
-  - Quit
-  - Toggle DevTools (`Ctrl+Shift+I`, dev-only)
+This starts the Vite dev server and launches the desktop shell loading the target URL.
 
 ## Build
 
@@ -56,91 +53,140 @@ This starts the Vite dev server (`npm run dev:web`) and opens the Tauri app load
 npm run build
 ```
 
-This runs:
+- Runs the Vite build and then `tauri build`.
+- Produces the configured bundle artifacts under `src-tauri/target/release/bundle/...`.
 
-- `npm run build:web`
-- `tauri build`
+Windows explicit build:
 
-Tauri output is generated under `src-tauri/target/release/bundle/` (Windows by default: `msi`).
+```bash
+npm run build:win
+```
 
-## Build fallback (if Tauri setup fails)
+Expected outputs (Windows):
 
-Use the Electron fallback app:
+- Portable executable: `src-tauri/target/release/bundle/app/net-control-center.exe`
+- Installer:
+  - `src-tauri/target/release/bundle/nsis/NET Control Center_x.y.z_x64-setup.exe`
+  - `src-tauri/target/release/bundle/msi/NET Control Center_x.y.z_x64.msi`
+
+If only one installer format is generated, this is controlled by your Tauri version and platform support.
+
+## Runtime behavior and features
+
+### Menu
+
+- File ? Open NET Control Center
+- File ? Reload
+- File ? Back
+- File ? Forward
+- File ? Settings...
+- File ? Clear Cache + Cookies
+- File ? Quit
+- File ? Toggle DevTools (dev only)
+
+### Keyboard shortcuts
+
+- `Ctrl+R` reload
+- `Alt+Left` back
+- `Alt+Right` forward
+- `Ctrl+Shift+I` toggle DevTools (dev only)
+- `Ctrl+Q` quit
+
+### Tray
+
+- App creates a tray icon.
+- Closing the app window hides it to tray (it does not quit).
+- Tray menu:
+  - Open NET Control Center
+  - Reload
+  - Clear Cache + Cookies
+  - Quit
+- Tray icon tooltip includes: **"App is running in tray"**
+
+### Settings
+
+Open settings from **File ? Settings...**.
+
+It supports:
+
+- Production URL (`https://dash.netransit.net`) [default]
+- Staging URL (`https://dash-staging.netransit.net`)
+- "Launch on startup" toggle (stored locally, scaffolded)
+
+Settings are saved at:
+
+- `%APPDATA%\net-control-center\settings.json` (Windows)
+
+## Session/cookies
+
+Session storage is preserved automatically through the embedded webview profile.
+
+Use **Clear Cache + Cookies** from menu or tray to clear browser storage; it then reloads the shell to the configured URL.
+
+## Security and allow-list
+
+Navigation in the webview is restricted to allow-listed hosts. External destinations are opened in your default browser and blocked from in-app navigation.
+
+Default allow-list:
+
+- `dash.netransit.net`
+- `dash-staging.netransit.net`
+- `api.netransit.net`
+- `avatar.netransit.net`
+- `avatars.netransit.net`
+- `cdn.netransit.net`
+
+To update allow-list for a proxy/avatar domain, add it to `allowed_hosts` in:
+
+- `%APPDATA%\net-control-center\settings.json`
+
+If this file does not exist, defaults are regenerated on first launch.
+
+## Icons
+
+Expected source files:
+
+- `icons/icon.png` (1024x1024)
+- `icons/icon.ico` (multi-size: 16,24,32,48,64,128,256)
+
+They are wired via `src-tauri/tauri.conf.json`:
+
+- `bundle.icon`
+- Windows NSIS installer icon via `bundle.windows.nsis.installerIcon`
+
+To replace icons:
+
+1. Replace `icon.png` and `icon.ico` with your assets using the same filenames.
+2. Rebuild: `npm run build:win`.
+3. If you only have a PNG, regenerate ico with ImageMagick:
+
+   ```bash
+   npm run icons:generate
+   ```
+
+If ImageMagick is unavailable, install it or use your preferred icon tool and keep the same file names.
+
+## Auto-update
+
+The scaffold in `src-tauri/tauri.conf.json` keeps updater disabled for local dev.
+To enable:
+
+1. Add signed/update endpoints to `plugins.updater`
+2. Provide manifest and binaries
+3. Re-enable updater in config
+
+For local development and testing, updater remains off by design.
+
+## Electron fallback
+
+If Tauri is unavailable:
 
 ```bash
 npm run dev:electron
-```
-
-```bash
 npm run build:electron
 ```
 
-The fallback keeps the same navigation guard + menu behavior and is intentionally lightweight.
+## Troubleshooting
 
-## Window behavior
-
-- Default size: `1400x900`
-- Minimum size: `1100x700`
-- Window title: `NetDash`
-- Last window size/position is stored in local config and restored on startup:
-  - `%APPDATA%\\netdash-desktop\\settings.json` on Windows
-  - equivalent user config directory on other platforms
-
-## Navigation/security behavior
-
-- Navigation is allowed only for:
-  - `dash.netransit.net`
-  - `dash-staging.netransit.net`
-  - `api.netransit.net`
-  - `avatar.netransit.net`
-  - `avatars.netransit.net`
-  - `cdn.netransit.net`
-- Any other domain is blocked in the app and opened in the default browser.
-
-## Cookie/session behavior
-
-- Browser state is kept in the embedded webview profile.
-- Use **File -> Clear Cache + Cookies** to reset embedded web data.
-
-## Native settings screen
-
-Use **File -> Settings...** to open the native settings window and choose:
-
-- `https://dash.netransit.net` (default)
-- `https://dash-staging.netransit.net`
-
-The selection is stored locally and reused at startup.
-
-Settings are persisted in:
-
-- `%APPDATA%\\netdash-desktop\\settings.json`
-
-## Auto-update scaffold
-
-`src-tauri/tauri.conf.json` contains an updater placeholder under `plugins.updater`.
-To wire auto-update locally:
-
-1. Host a JSON update manifest and binaries at a URL you control.
-2. Populate `endpoints` and `pubkey` in `src-tauri/tauri.conf.json`.
-3. Enable signing for Windows installers when you release signed production builds.
-
-The scaffold is disabled by default to avoid requiring signing for local development.
-
-## Icon assets
-
-Placeholder icons are provided as:
-
-- `icons/icon.ico`
-- `icons/icon.png`
-- `icons/icon.icns`
-
-Replace these with your production icons before release:
-
-- Keep file names the same for a drop-in replacement.
-- Rebuild after replacement.
-
-## Security notes
-
-- URL allow-list is enforced in the Rust webview navigation handler.
-- External destinations are sent to the default browser via OS shell.
-- The desktop app intentionally does not re-implement the dashboard UI to keep parity with the live web app.
+- If Tauri commands fail due to missing Rust tooling (`cargo metadata`), ensure Rust is installed and in PATH.
+- If the desktop shell fails to launch, confirm that `npm install` has been run in both repo root and `electron-fallback/` for fallback testing.

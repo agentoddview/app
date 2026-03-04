@@ -17,7 +17,7 @@ type NetDashConfig = {
   targetUrl: string;
 };
 
-const configPath = join(app.getPath('userData'), 'netdash-desktop.config.json');
+const configPath = join(app.getPath('userData'), 'net-control-center.config.json');
 
 function readConfig(): NetDashConfig {
   if (!existsSync(configPath)) {
@@ -78,7 +78,7 @@ function createMainWindow(): BrowserWindow {
     height: 900,
     minWidth: 1100,
     minHeight: 700,
-    title: 'NetDash',
+    title: 'NET Control Center',
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
