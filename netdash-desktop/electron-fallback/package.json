@@ -1,6 +1,8 @@
 {
   "name": "netdash-desktop-electron-fallback",
+  "description": "NET Control Center Electron fallback shell",
   "version": "0.1.0",
+  "author": "NetTransit",
   "private": true,
   "main": "dist/main.js",
   "type": "commonjs",
