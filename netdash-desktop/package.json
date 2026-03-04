@@ -5,14 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "tauri dev",
-    "build": "tauri build",
-    "build:win": "tauri build --bundles app nsis msi",
+    "build": "npm run icons:generate && tauri build",
+    "build:win": "npm run icons:generate && tauri build --bundles app nsis msi",
     "dev:web": "vite",
     "build:web": "vite build",
-    "icons:generate": "magick convert icons/icon.png -define icon:auto-resize=16,24,32,48,64,128,256 icons/icon.ico",
+    "icons:generate": "node scripts/generate-icons.mjs",
     "dev:electron": "cd electron-fallback && npm install && npm run dev",
-    "build:electron:compile": "cd electron-fallback && npm install && npm run build",
-    "build:electron:win": "cd electron-fallback && npm install && npm run dist",
+    "build:electron:compile": "npm run icons:generate && cd electron-fallback && npm install && npm run build",
+    "build:electron:win": "npm run icons:generate && cd electron-fallback && npm install && npm run dist",
     "build:electron": "npm run build:electron:win"
   },
   "dependencies": {
@@ -21,6 +21,8 @@
   "devDependencies": {
     "@tauri-apps/cli": "^2.0.0",
     "@types/node": "^22.5.0",
+    "png-to-ico": "^3.0.1",
+    "sharp": "^0.34.5",
     "typescript": "^5.6.2",
     "vite": "^6.0.1"
   }
