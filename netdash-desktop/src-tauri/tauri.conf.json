@@ -32,7 +32,7 @@
         "installerIcon": "icons/icon.ico",
         "startMenuFolder": "NET Control Center"
       }
-    ]
+    }
   },
   "plugins": {
     "updater": {
