@@ -65,7 +65,6 @@ function createMainWindow(): BrowserWindow {
     minHeight: 700,
     title: 'NET Control Center',
     autoHideMenuBar: true,
-    menuBarVisible: false,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
