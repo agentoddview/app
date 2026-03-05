@@ -4,8 +4,8 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 use tauri::{
-  menu::{IsMenuItem, Menu, MenuItem, Submenu},
-  tray::{TrayIconBuilder, TrayIconEvent},
+  menu::{IsMenuItem, Menu, MenuItem},
+  tray::TrayIconBuilder,
   AppHandle, Manager, Url, WebviewUrl, WebviewWindow, WebviewWindowBuilder, WindowEvent,
 };
 
@@ -20,8 +20,6 @@ const MENU_OPEN: &str = "app.open";
 const MENU_RELOAD: &str = "file.reload";
 const MENU_BACK: &str = "file.back";
 const MENU_FORWARD: &str = "file.forward";
-const MENU_TOGGLE_DEVTOOLS: &str = "file.toggle-devtools";
-const MENU_SETTINGS: &str = "file.settings";
 const MENU_CLEAR_CACHE: &str = "file.clear-cache-cookies";
 const MENU_QUIT: &str = "app.quit";
 const MENU_TRAY_HINT: &str = "tray.hint";
@@ -263,22 +261,10 @@ fn execute_menu_action(app: &AppHandle, action: &str) {
       };
       let _ = main_window.eval("window.history.forward();");
     }
-    MENU_SETTINGS => {
-      open_settings_window(app);
-    }
     MENU_CLEAR_CACHE => {
       let _ = clear_cache_and_cookies_internal(app);
     }
     MENU_TRAY_HINT => {}
-    MENU_TOGGLE_DEVTOOLS => {
-      #[cfg(debug_assertions)]
-      {
-        let Some(main_window) = app.get_webview_window(MAIN_WINDOW_LABEL) else {
-          return;
-        };
-        let _ = main_window.open_devtools();
-      }
-    }
     MENU_QUIT => {
       app.exit(0);
     }
@@ -313,53 +299,6 @@ fn clear_cache_and_cookies_internal(app: &AppHandle) -> Result<Settings, String>
     .navigate(url)
     .map_err(|error| error.to_string())?;
   Ok(settings)
-}
-
-fn build_app_menu(app: &AppHandle) -> tauri::Result<Menu> {
-  let open = MenuItem::with_id(
-    app,
-    MENU_OPEN,
-    "Open NET Control Center",
-    true,
-    None::<&str>,
-  )?;
-  let reload = MenuItem::with_id(app, MENU_RELOAD, "Reload", true, Some("CmdOrControl+R"))?;
-  let back = MenuItem::with_id(app, MENU_BACK, "Back", true, Some("Alt+Left"))?;
-  let forward = MenuItem::with_id(app, MENU_FORWARD, "Forward", true, Some("Alt+Right"))?;
-  let settings = MenuItem::with_id(app, MENU_SETTINGS, "Settings...", true, None::<&str>)?;
-  let clear_cache = MenuItem::with_id(
-    app,
-    MENU_CLEAR_CACHE,
-    "Clear Cache + Cookies",
-    true,
-    None::<&str>,
-  )?;
-  let quit = MenuItem::with_id(app, MENU_QUIT, "Quit", true, Some("CmdOrControl+Q"))?;
-
-  let mut items: Vec<&dyn IsMenuItem> = vec![
-    &open,
-    &reload,
-    &back,
-    &forward,
-    &settings,
-    &clear_cache,
-  ];
-
-  #[cfg(debug_assertions)]
-  {
-    let devtools = MenuItem::with_id(
-      app,
-      MENU_TOGGLE_DEVTOOLS,
-      "Toggle DevTools (Dev Only)",
-      true,
-      Some("CmdOrControl+Shift+I"),
-    )?;
-    items.push(&devtools);
-  }
-
-  items.push(&quit);
-  let file = Submenu::with_id_and_items(app, "file", "File", true, &items)?;
-  Menu::with_items(app, &[&file])
 }
 
 fn build_tray_menu(app: &AppHandle) -> tauri::Result<Menu> {
@@ -449,10 +388,6 @@ fn clear_cache_and_cookies(app: AppHandle) -> Result<Settings, String> {
 
 fn main() {
   tauri::Builder::default()
-    .menu(build_app_menu)
-    .on_menu_event(|app, event| {
-      execute_menu_action(app, event.id().as_ref());
-    })
     .invoke_handler(tauri::generate_handler![
       get_settings,
       set_target_url,
