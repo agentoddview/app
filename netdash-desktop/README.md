@@ -6,7 +6,7 @@ If you are using the Electron fallback (because Tauri is unavailable), run:
 npm run build:electron
 ```
 
-This runs `npm install` in `electron-fallback`, compiles TS, and then runs `electron-builder` for Windows x64 `nsis` + `portable` targets.
+This runs `npm install` in `electron-fallback`, compiles TS, and then builds both Windows x64 targets (`nsis` + `portable`) by default.
 
 Output files:
 
@@ -17,10 +17,26 @@ To build only one target:
 
 ```bash
 cd electron-fallback
-npm run build:win   # installer (NSIS)
-npm run dist        # alias (installer + portable)
+npm run dist:portable   # only portable executable
+npm run dist:installer  # only NSIS installer
+npm run dist:both       # both portable and installer
+npm run build:win       # both (alias)
 npm run pack        # unpacked directory (diagnostics only)
 ```
+
+From the repo root you can also run:
+
+```bash
+npm run build:electron:portable
+npm run build:electron:installer
+npm run build:electron:win
+```
+
+Why artifacts can still be large:
+
+- Electron includes a full Chromium runtime, so each artifact is larger than a web app.
+- The biggest bloat happens when you build installer + portable together because each has its own runtime copy.
+- Build one target when possible to keep artifacts smaller.
 
 Replace the icons used by both Tauri and Electron by updating:
 

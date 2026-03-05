@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, shell } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -97,40 +97,44 @@ function createMainWindow(): BrowserWindow {
 }
 
 function registerShortcuts(window: BrowserWindow): void {
-  globalShortcut.register('CmdOrControl+R', () => {
-    window.reload();
-  });
-
-  globalShortcut.register('Alt+Left', () => {
-    if (window.webContents.canGoBack()) {
-      window.webContents.goBack();
+  window.webContents.on('before-input-event', (_event, input) => {
+    if (input.type !== 'keyDown') {
+      return;
     }
-  });
 
-  globalShortcut.register('Alt+Right', () => {
-    if (window.webContents.canGoForward()) {
-      window.webContents.goForward();
+    if (input.control && !input.shift && !input.alt && input.key.toLowerCase() === 'r') {
+      window.webContents.reload();
+      return;
     }
-  });
 
-  if (process.env.NODE_ENV !== 'production') {
-    globalShortcut.register('CmdOrControl+Shift+I', () => {
+    if (input.alt && !input.control && !input.shift && input.key === 'ArrowLeft') {
+      if (window.webContents.canGoBack()) {
+        window.webContents.goBack();
+      }
+      return;
+    }
+
+    if (input.alt && !input.control && !input.shift && input.key === 'ArrowRight') {
+      if (window.webContents.canGoForward()) {
+        window.webContents.goForward();
+      }
+      return;
+    }
+
+    if (process.env.NODE_ENV !== 'production' && input.control && input.shift && !input.alt && input.key.toLowerCase() === 'i') {
       window.webContents.openDevTools();
-    });
-  }
+      return;
+    }
 
-  globalShortcut.register('CmdOrControl+Q', () => {
-    app.quit();
+    if (input.control && !input.shift && !input.alt && input.key.toLowerCase() === 'q') {
+      app.quit();
+    }
   });
 }
 
 app.whenReady().then(() => {
   mainWindow = createMainWindow();
   registerShortcuts(mainWindow);
-
-  app.on('will-quit', () => {
-    globalShortcut.unregisterAll();
-  });
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {

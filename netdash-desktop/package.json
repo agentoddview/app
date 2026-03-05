@@ -11,8 +11,9 @@
     "build:web": "vite build",
     "icons:generate": "node scripts/generate-icons.mjs",
     "dev:electron": "cd electron-fallback && npm install && npm run dev",
-    "build:electron:compile": "npm run icons:generate && cd electron-fallback && npm install && npm run build",
-    "build:electron:win": "npm run icons:generate && cd electron-fallback && npm install && npm run dist",
+    "build:electron:portable": "npm run icons:generate && cd electron-fallback && npm install && npm run dist:portable",
+    "build:electron:installer": "npm run icons:generate && cd electron-fallback && npm install && npm run dist:installer",
+    "build:electron:win": "npm run icons:generate && cd electron-fallback && npm install && npm run dist:both",
     "build:electron": "npm run build:electron:win"
   },
   "dependencies": {

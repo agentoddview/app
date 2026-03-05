@@ -8,8 +8,11 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc",
-    "dist": "npm run build && electron-builder --win nsis portable --x64",
-    "build:win": "npm run dist",
+    "dist": "npm run build && electron-builder --win portable --x64",
+    "dist:portable": "npm run build && electron-builder --win portable --x64",
+    "dist:installer": "npm run build && electron-builder --win nsis --x64",
+    "dist:both": "npm run build && electron-builder --win nsis portable --x64",
+    "build:win": "npm run dist:both",
     "pack": "npm run build && electron-builder --dir --win --x64",
     "dev": "npm run build && electron .",
     "start": "electron ."
@@ -30,26 +33,13 @@
       "buildResources": "../icons"
     },
     "asar": true,
+    "compression": "maximum",
     "files": [
       "dist/**/*",
       "package.json"
     ],
     "win": {
-      "icon": "../icons/icon.ico",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
+      "icon": "../icons/icon.ico"
     },
     "nsis": {
       "artifactName": "NET-Control-Center-Setup-${version}.${ext}",
