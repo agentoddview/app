@@ -35,7 +35,7 @@
     "asar": true,
     "compression": "maximum",
     "files": [
-      "dist/**/*",
+      "dist/main.js",
       "package.json"
     ],
     "win": {

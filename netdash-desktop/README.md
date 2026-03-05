@@ -38,6 +38,21 @@ Why artifacts can still be large:
 - The biggest bloat happens when you build installer + portable together because each has its own runtime copy.
 - Build one target when possible to keep artifacts smaller.
 
+If installer build fails with `failed creating mmap of ... .nsis.7z`:
+
+1. Remove old outputs so stale `*.nsis.7z` files are not re-packaged:
+
+```powershell
+Remove-Item -Recurse -Force "C:\Users\Fritz\netgas\app\netdash-desktop\electron-fallback\dist\out"
+```
+
+2. Rebuild installer:
+
+```powershell
+Set-Location "C:\Users\Fritz\netgas\app\netdash-desktop"
+npm run build:electron:installer
+```
+
 Replace the icons used by both Tauri and Electron by updating:
 
 - `icons/icon.png` (1024x1024 PNG)
